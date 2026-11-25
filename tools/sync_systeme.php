@@ -13,8 +13,11 @@ require_once __DIR__ . '/../app/Store.php';
 const MAX_JOBS_PER_RUN = 8;
 const MAX_ATTEMPTS = 5;
 
-$lock = fopen(APP_ROOT . '/data/sync.lock', 'c');
-if (!flock($lock, LOCK_EX | LOCK_NB)) {
+$logFile = data_dir() . '/sync.log';
+file_put_contents($logFile, gmdate('c') . ' worker started' . PHP_EOL, FILE_APPEND | LOCK_EX);
+
+$lock = fopen(data_dir() . '/sync.lock', 'c');
+if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) {
     exit(0); // previous run still going
 }
 
@@ -52,7 +55,7 @@ foreach ($jobs as $job) {
     if (!$ok) {
         // Plain-text log in data/ (not web-accessible) so failures can be read over SFTP.
         $line = gmdate('c') . " job={$job['id']} action={$job['action']} error={$error} last_call=" . ($GLOBALS['systeme_last'] ?? 'none') . PHP_EOL;
-        file_put_contents(APP_ROOT . '/data/sync.log', $line, FILE_APPEND | LOCK_EX);
+        file_put_contents($logFile, $line, FILE_APPEND | LOCK_EX);
     }
 
     $attempts = (int) $job['attempts'] + 1;

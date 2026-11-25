@@ -152,6 +152,16 @@ function http_json(string $method, string $url, array $headers = [], array|strin
     return $data;
 }
 
+/** Folder that holds the database, lock file, and sync log. Created if missing. */
+function data_dir(): string
+{
+    $dir = dirname(env('DB_PATH', APP_ROOT . '/data/kiss.sqlite'));
+    if (!is_dir($dir)) {
+        mkdir($dir, 0750, true);
+    }
+    return $dir;
+}
+
 function db(): PDO
 {
     static $pdo = null;
