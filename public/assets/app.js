@@ -124,7 +124,10 @@
         createOrder: function () {
           return postJson('/api/paypal-create.php', { order_id: window.KISS.orderId })
             .then(function (res) {
-              if (!res.data.ok) { throw new Error(res.data.error || 'create_failed'); }
+              if (!res.data.ok) {
+                console.error('paypal-create response:', JSON.stringify(res.data));
+                throw new Error(res.data.error || 'create_failed');
+              }
               return res.data.id;
             });
         },
