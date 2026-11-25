@@ -132,12 +132,28 @@ function paypal_capture_pack_order(string $paypalOrderId): array
     if ($token === null) {
         return ['ok' => false, 'error' => 'payments_not_configured'];
     }
-    $res = paypal_call('POST', '/v2/checkout/orders/' . rawurlencode($paypalOrderId) . '/capture', [], $token, $paypalOrderId . '-capture');
+    // No body: an empty PHP array encodes as "[]", which PayPal rejects for capture.
+    $res = paypal_call('POST', '/v2/checkout/orders/' . rawurlencode($paypalOrderId) . '/capture', null, $token, $paypalOrderId . '-capture');
     $unit = $res['purchase_units'][0] ?? [];
     $capture = $unit['payments']['captures'][0] ?? [];
     $ok = in_array($res['_status'] ?? 0, [200, 201], true) && ($capture['status'] ?? '') === 'COMPLETED';
     if (!$ok) {
-        return ['ok' => false, 'error' => 'capture_not_completed'];
+        return [
+            'ok' => false,
+            'error' => 'capture_not_completed',
+            'detail' => [
+                'stage' => 'capture',
+                'status' => $res['_status'] ?? 0,
+                'order_status' => $res['status'] ?? null,
+                'capture_status' => $capture['status'] ?? null,
+                'name' => $res['name'] ?? null,
+                'message' => $res['message'] ?? null,
+                'issue' => $res['details'][0]['issue'] ?? null,
+                'description' => $res['details'][0]['description'] ?? null,
+                'debug_id' => $res['debug_id'] ?? null,
+                'preview' => mb_substr((string) json_encode($res, JSON_UNESCAPED_SLASHES), 0, 400),
+            ],
+        ];
     }
     $expected = number_format((float) env('PACK_PRICE_USD', '10.00') + (float) env('PACK_SHIPPING_USD', '7.99'), 2, '.', '');
     if (($capture['amount']['value'] ?? '') !== $expected || ($capture['amount']['currency_code'] ?? '') !== 'USD') {
