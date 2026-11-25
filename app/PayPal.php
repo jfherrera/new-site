@@ -104,7 +104,7 @@ function paypal_create_pack_order(string $orderId, string $businessName): array
         ],
     ], $token, $orderId . '-create');
 
-    if (($res['_status'] ?? 0) !== 201 || empty($res['id'])) {
+    if (!in_array($res['_status'] ?? 0, [200, 201], true) || empty($res['id'])) {
         return [
             'ok' => false,
             'error' => 'paypal_create_failed',
@@ -117,6 +117,8 @@ function paypal_create_pack_order(string $orderId, string $businessName): array
                 'description' => $res['details'][0]['description'] ?? null,
                 'debug_id' => $res['debug_id'] ?? null,
                 'env' => env('PAYPAL_ENV', 'live'),
+                // Preview only, for diagnosis. The create response holds no secrets.
+                'preview' => mb_substr((string) json_encode($res, JSON_UNESCAPED_SLASHES), 0, 400),
             ],
         ];
     }
