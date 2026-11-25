@@ -48,7 +48,7 @@ function paypal_token(): ?string
     return null;
 }
 
-function paypal_call(string $method, string $path, ?array $body, string $token, ?string $requestId = null): array
+function paypal_call(string $method, string $path, array|string|null $body, string $token, ?string $requestId = null): array
 {
     $headers = ['Authorization: Bearer ' . $token];
     if ($requestId !== null) {
@@ -132,8 +132,8 @@ function paypal_capture_pack_order(string $paypalOrderId): array
     if ($token === null) {
         return ['ok' => false, 'error' => 'payments_not_configured'];
     }
-    // No body: an empty PHP array encodes as "[]", which PayPal rejects for capture.
-    $res = paypal_call('POST', '/v2/checkout/orders/' . rawurlencode($paypalOrderId) . '/capture', null, $token, $paypalOrderId . '-capture');
+    // PayPal needs a JSON body with Content-Type set, even when it's empty: send "{}".
+    $res = paypal_call('POST', '/v2/checkout/orders/' . rawurlencode($paypalOrderId) . '/capture', '{}', $token, $paypalOrderId . '-capture');
     $unit = $res['purchase_units'][0] ?? [];
     $capture = $unit['payments']['captures'][0] ?? [];
     $ok = in_array($res['_status'] ?? 0, [200, 201], true) && ($capture['status'] ?? '') === 'COMPLETED';

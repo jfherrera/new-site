@@ -123,7 +123,7 @@ function review_url(string $placeId): string
 }
 
 /** Small cURL wrapper. Returns decoded JSON plus _status (HTTP code, 0 on transport error). */
-function http_json(string $method, string $url, array $headers = [], ?array $body = null): array
+function http_json(string $method, string $url, array $headers = [], array|string|null $body = null): array
 {
     $ch = curl_init($url);
     $opts = [
@@ -134,7 +134,8 @@ function http_json(string $method, string $url, array $headers = [], ?array $bod
     ];
     if ($body !== null) {
         $opts[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
-        $opts[CURLOPT_POSTFIELDS] = json_encode($body);
+        // A string body is sent as-is (used for PayPal's empty JSON object); arrays are encoded.
+        $opts[CURLOPT_POSTFIELDS] = is_string($body) ? $body : json_encode($body);
     }
     curl_setopt_array($ch, $opts);
     $raw = curl_exec($ch);
