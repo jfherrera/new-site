@@ -18,6 +18,7 @@ function paypal_token(): ?string
     $id = env('PAYPAL_CLIENT_ID');
     $secret = env('PAYPAL_SECRET');
     if ($id === null || $secret === null) {
+        $GLOBALS['paypal_diag'] = ['stage' => 'auth', 'reason' => 'credentials_missing', 'env' => env('PAYPAL_ENV', 'live')];
         return null;
     }
     $ch = curl_init(paypal_base() . '/v1/oauth2/token');
@@ -32,8 +33,19 @@ function paypal_token(): ?string
     $raw = curl_exec($ch);
     $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     curl_close($ch);
-    $data = json_decode((string) $raw, true);
-    return ($status === 200 && !empty($data['access_token'])) ? $data['access_token'] : null;
+    $data = json_decode((string) $raw, true) ?: [];
+    if ($status === 200 && !empty($data['access_token'])) {
+        return $data['access_token'];
+    }
+    // Safe to show: PayPal's error name and description. No secrets.
+    $GLOBALS['paypal_diag'] = [
+        'stage' => 'auth',
+        'status' => $status,
+        'error' => $data['error'] ?? null,
+        'error_description' => $data['error_description'] ?? null,
+        'env' => env('PAYPAL_ENV', 'live'),
+    ];
+    return null;
 }
 
 function paypal_call(string $method, string $path, ?array $body, string $token, ?string $requestId = null): array
@@ -53,7 +65,7 @@ function paypal_create_pack_order(string $orderId, string $businessName): array
 {
     $token = paypal_token();
     if ($token === null) {
-        return ['ok' => false, 'error' => 'payments_not_configured'];
+        return ['ok' => false, 'error' => 'paypal_auth_failed', 'detail' => $GLOBALS['paypal_diag'] ?? []];
     }
     $pack = number_format((float) env('PACK_PRICE_USD', '10.00'), 2, '.', '');
     $ship = number_format((float) env('PACK_SHIPPING_USD', '7.99'), 2, '.', '');
@@ -93,7 +105,20 @@ function paypal_create_pack_order(string $orderId, string $businessName): array
     ], $token, $orderId . '-create');
 
     if (($res['_status'] ?? 0) !== 201 || empty($res['id'])) {
-        return ['ok' => false, 'error' => 'paypal_create_failed'];
+        return [
+            'ok' => false,
+            'error' => 'paypal_create_failed',
+            'detail' => [
+                'stage' => 'create',
+                'status' => $res['_status'] ?? 0,
+                'name' => $res['name'] ?? null,
+                'message' => $res['message'] ?? null,
+                'issue' => $res['details'][0]['issue'] ?? null,
+                'description' => $res['details'][0]['description'] ?? null,
+                'debug_id' => $res['debug_id'] ?? null,
+                'env' => env('PAYPAL_ENV', 'live'),
+            ],
+        ];
     }
     return ['ok' => true, 'paypal_order_id' => $res['id']];
 }
