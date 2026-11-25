@@ -101,6 +101,19 @@
   }
 
   // ---------- Step 3: thank-you and PayPal pack upsell ----------
+  // The free marketing analysis is revealed only after the upsell is bought or declined.
+  function revealAnalysis() {
+    var slot = $('analysis-slot');
+    if (slot) { slot.hidden = false; slot.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }
+  var decline = $('decline-upsell');
+  if (decline) {
+    decline.addEventListener('click', function () {
+      decline.hidden = true;
+      revealAnalysis();
+    });
+  }
+
   var paypalTarget = $('paypal-buttons');
   if (paypalTarget && window.KISS && window.KISS.paypalClientId && !window.KISS.paid) {
     var host = window.KISS.paypalEnv === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com';
@@ -120,6 +133,8 @@
             .then(function (res) {
               if (res.data.ok) {
                 paypalTarget.innerHTML = '<p class="success">' + res.data.message + '</p>';
+                if (decline) { decline.hidden = true; }
+                revealAnalysis();
               } else {
                 throw new Error(res.data.error || 'capture_failed');
               }

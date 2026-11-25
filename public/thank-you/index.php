@@ -54,10 +54,11 @@ page_head('Thank You | KISS Reviews', 'Your free decal is on its way.');
           <div id="paypal-buttons" data-order="<?= $oid ?>"></div>
           <p class="error" id="pay-error" role="alert" hidden></p>
           <p class="fine">Secure checkout by PayPal. You can pay with PayPal or a card.</p>
+          <button type="button" class="link-btn" id="decline-upsell">No thanks, show me the next step</button>
         <?php endif; ?>
       </div>
 
-      <div class="analysis-card">
+      <div class="analysis-card" id="analysis-slot" <?= $paid ? '' : 'hidden' ?>>
         <span class="badge badge-soft">Free for you</span>
         <h2>Get a free marketing analysis</h2>
         <p>We'll perform a free marketing analysis of your business and have it ready to review with you. Book a time that works for you.</p>
