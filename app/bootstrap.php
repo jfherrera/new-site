@@ -27,6 +27,33 @@ function load_secrets(): void
 }
 load_secrets();
 
+/**
+ * Canonical host: www.kissreviews.com and go.kissreviews.com 301 to kissreviews.com on the
+ * same path. Old go.* funnel paths map to the new pages. The go.* query string is dropped
+ * because the old funnel put the visitor's email in it. Other hosts (Cloudways staging) are untouched.
+ */
+function canonical_host_redirect(): void
+{
+    if (PHP_SAPI === 'cli') {
+        return;
+    }
+    $host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+    if (!in_array($host, ['www.kissreviews.com', 'go.kissreviews.com'], true)) {
+        return;
+    }
+    $uri = $_SERVER['REQUEST_URI'] ?? '/';
+    $qpos = strpos($uri, '?');
+    $path = $qpos === false ? $uri : substr($uri, 0, $qpos);
+    $query = ($qpos === false || $host === 'go.kissreviews.com') ? '' : substr($uri, $qpos);
+    $legacy = ['/biz-infomx-1' => '/biz-lookup/', '/mx-thank-you' => '/thank-you/'];
+    $key = rtrim($path, '/');
+    if (isset($legacy[$key])) {
+        $path = $legacy[$key];
+    }
+    redirect_to('https://kissreviews.com' . $path . $query, 301);
+}
+canonical_host_redirect();
+
 function env(string $key, ?string $default = null): ?string
 {
     $v = getenv($key);
