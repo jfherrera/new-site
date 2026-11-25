@@ -1,0 +1,6 @@
+.env
+data/
+*.sqlite*
+tools/decal/*.psd
+tools/decal/*.psb
+__pycache__/
