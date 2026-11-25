@@ -34,7 +34,7 @@ Check on staging that `/biz-lookup` (no trailing slash) redirects to `/biz-looku
 
 **Google Places (New).** In the KissReviews project, enable *Places API (New)* and create an API key. Restrict it to that API and to the server's IP. Set `GOOGLE_PLACES_API_KEY`.
 
-**PayPal.** Create a REST app in the PayPal Developer dashboard. Test with `PAYPAL_ENV=sandbox` and sandbox credentials first, then switch to `live`. Set `PAYPAL_CLIENT_ID`, `PAYPAL_SECRET`, `PACK_PRICE_USD=10.00`, and `PACK_SHIPPING_USD` (the S&H amount, still to be confirmed).
+**PayPal.** Create a REST app in the PayPal Developer dashboard. Test with `PAYPAL_ENV=sandbox` and sandbox credentials first, then switch to `live`. Set `PAYPAL_CLIENT_ID`, `PAYPAL_SECRET`, `PACK_PRICE_USD=10.00`, and `PACK_SHIPPING_USD=7.99` (shipping and handling).
 
 **systeme.io (free plan, 30 requests/minute).** Create these custom fields (slugs must match exactly): `business_name`, `business_address`, `business_phone`, `business_website`, `google_review_url`, `place_id`, `kiss_order_id`. Create the tags `kiss-free-decal` and `kiss-pack-buyer`, or let the worker create them. Set `SYSTEME_API_KEY`.
 The endpoint paths in `app/Systeme.php` follow systeme.io's public API. Check them against the API docs in your account on the first run. If a job fails, `sync_jobs.last_error` in the database shows the response.
@@ -53,7 +53,6 @@ This writes `out/business-name.png` (1170 × 2010 px, 3.9 × 6.7 in at 300 dpi) 
 
 ## Open items before launch
 
-- `PACK_SHIPPING_USD`: the shipping and handling amount for the 5-pack.
 - Privacy policy and terms pages. The funnel collects emails, phone numbers, and addresses.
 - Confirm the booklikeaboss.com booking URL (the CTA currently links to the root).
 - Replace the sample decal QR (see above).

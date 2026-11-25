@@ -56,7 +56,7 @@ function paypal_create_pack_order(string $orderId, string $businessName): array
         return ['ok' => false, 'error' => 'payments_not_configured'];
     }
     $pack = number_format((float) env('PACK_PRICE_USD', '10.00'), 2, '.', '');
-    $ship = number_format((float) env('PACK_SHIPPING_USD', '0.00'), 2, '.', '');
+    $ship = number_format((float) env('PACK_SHIPPING_USD', '7.99'), 2, '.', '');
     $total = number_format((float) $pack + (float) $ship, 2, '.', '');
 
     $res = paypal_call('POST', '/v2/checkout/orders', [
@@ -112,7 +112,7 @@ function paypal_capture_pack_order(string $paypalOrderId): array
     if (!$ok) {
         return ['ok' => false, 'error' => 'capture_not_completed'];
     }
-    $expected = number_format((float) env('PACK_PRICE_USD', '10.00') + (float) env('PACK_SHIPPING_USD', '0.00'), 2, '.', '');
+    $expected = number_format((float) env('PACK_PRICE_USD', '10.00') + (float) env('PACK_SHIPPING_USD', '7.99'), 2, '.', '');
     if (($capture['amount']['value'] ?? '') !== $expected || ($capture['amount']['currency_code'] ?? '') !== 'USD') {
         return ['ok' => false, 'error' => 'amount_mismatch'];
     }
