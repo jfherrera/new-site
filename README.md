@@ -26,7 +26,7 @@ Old URLs `/biz-infomx-1` and `/mx-thank-you` return 301 to `/biz-lookup/`.
 4. Set `DB_PATH` to a folder outside `public/`. The app creates the folder.
 5. Add a cron job, every minute: `php /home/master/applications/<app>/public_html/tools/sync_systeme.php`
    (adjust to the app's path).
-6. Test each step on a Cloudways staging clone before pointing `go.kissreviews.com` at it.
+6. Test each step on a Cloudways staging clone before pointing `kissreviews.com` at it.
 
 Check on staging that `/biz-lookup` (no trailing slash) redirects to `/biz-lookup/`. This relies on Lightning's default `index.php` handling, which should be confirmed there.
 
