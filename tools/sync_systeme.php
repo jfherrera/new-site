@@ -54,7 +54,10 @@ foreach ($jobs as $job) {
 
     if (!$ok) {
         // Plain-text log in data/ (not web-accessible) so failures can be read over SFTP.
-        $line = gmdate('c') . " job={$job['id']} action={$job['action']} error={$error} last_call=" . ($GLOBALS['systeme_last'] ?? 'none') . PHP_EOL;
+        $line = gmdate('c') . " job={$job['id']} action={$job['action']} error={$error}"
+            . ' create_with_fields=' . ($GLOBALS['systeme_create_with_fields'] ?? '-')
+            . ' create_bare=' . ($GLOBALS['systeme_create_bare'] ?? '-')
+            . ' last_call=' . ($GLOBALS['systeme_last'] ?? 'none') . PHP_EOL;
         file_put_contents($logFile, $line, FILE_APPEND | LOCK_EX);
     }
 

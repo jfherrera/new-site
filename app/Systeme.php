@@ -67,6 +67,15 @@ function systeme_upsert_contact(array $order): ?int
     if (isset($res['id'])) {
         return (int) $res['id'];
     }
+    $GLOBALS['systeme_create_with_fields'] = $GLOBALS['systeme_last'] ?? 'none';
+    // Fallback: create the contact with email only, so the lead isn't lost if a custom field is rejected.
+    $bare = systeme_call('POST', '/contacts', ['email' => $order['email']]);
+    $GLOBALS['systeme_create_bare'] = $GLOBALS['systeme_last'] ?? 'none';
+    if (isset($bare['id'])) {
+        $id = (int) $bare['id'];
+        systeme_call('PATCH', '/contacts/' . $id, ['fields' => $fields]);
+        return $id;
+    }
     // Contact already exists: look it up by email and update.
     $found = systeme_call('GET', '/contacts?email=' . rawurlencode($order['email']));
     $id = $found['items'][0]['id'] ?? null;
