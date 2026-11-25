@@ -11,30 +11,61 @@ if ($order === null) {
 $name = h($order['business_name']);
 $oid = h($order['id']);
 $paid = $order['pack_status'] === 'paid';
+$packPrice = number_format((float) env('PACK_PRICE_USD', '10.00'), 2);
+$packShip = number_format((float) env('PACK_SHIPPING_USD', '7.99'), 2);
+$packTotal = number_format((float) env('PACK_PRICE_USD', '10.00') + (float) env('PACK_SHIPPING_USD', '7.99'), 2);
 
 page_head('Thank You | KISS Reviews', 'Your free decal is on its way.');
 ?>
-<section class="container narrow thanks">
-  <h1>Thank you, <?= $name ?>!</h1>
-  <p class="lede">Your free decal is on its way. Please allow 1 to 2 weeks for delivery.</p>
-</section>
+<section class="thanks-wrap">
+  <div class="container">
 
-<section class="container narrow card upsell">
-  <h2>Add 5 more decals</h2>
-  <p>Put a decal at every counter, door, and register. Five more decals for <strong>$10</strong> plus shipping and handling.</p>
-  <?php if ($paid): ?>
-    <p class="success">Your 5 extra decals are on the way. Thank you!</p>
-  <?php else: ?>
-    <div id="paypal-buttons" data-order="<?= $oid ?>"></div>
-    <p class="error" id="pay-error" role="alert" hidden></p>
-    <p class="fine">Payment is processed securely by PayPal.</p>
-  <?php endif; ?>
-</section>
+    <div class="progress" aria-label="Step 3 of 3">
+      <span class="progress-dot done">&#10003;</span>
+      <span class="progress-line done"></span>
+      <span class="progress-dot done">&#10003;</span>
+      <span class="progress-line done"></span>
+      <span class="progress-dot current">3</span>
+      <span class="progress-label">Step 3 of 3</span>
+    </div>
 
-<section class="container narrow card analysis">
-  <h2>Get a free marketing analysis</h2>
-  <p>We'll perform a free marketing analysis of your business and have it ready to review with you. Book a time that works for you.</p>
-  <a class="btn btn-secondary" href="https://booklikeaboss.com" rel="noopener">Book your review call</a>
+    <div class="thanks-hero">
+      <div class="check-circle" aria-hidden="true">&#10003;</div>
+      <h1>You're all set, <?= $name ?>!</h1>
+      <p class="lede">Your free decal is on its way. Allow 1 to 2 weeks for delivery. Put it where customers can scan it, like the register or the front door.</p>
+    </div>
+
+    <div class="thanks-grid">
+
+      <div class="upsell-card">
+        <span class="badge">Optional upgrade</span>
+        <h2>Add 5 more decals</h2>
+        <p class="upsell-lede">One at every counter, door, and register. Same design, same QR code.</p>
+
+        <div class="price-stack">
+          <div><span>5 extra decals</span><span>$<?= $packPrice ?></span></div>
+          <div><span>Shipping &amp; handling</span><span>$<?= $packShip ?></span></div>
+          <div class="total"><span>Total</span><span>$<?= $packTotal ?></span></div>
+        </div>
+
+        <?php if ($paid): ?>
+          <p class="success big">Thank you! Your 5 extra decals are on the way.</p>
+        <?php else: ?>
+          <div id="paypal-buttons" data-order="<?= $oid ?>"></div>
+          <p class="error" id="pay-error" role="alert" hidden></p>
+          <p class="fine">Secure checkout by PayPal. You can pay with PayPal or a card.</p>
+        <?php endif; ?>
+      </div>
+
+      <div class="analysis-card">
+        <span class="badge badge-soft">Free for you</span>
+        <h2>Get a free marketing analysis</h2>
+        <p>We'll perform a free marketing analysis of your business and have it ready to review with you. Book a time that works for you.</p>
+        <a class="btn btn-secondary btn-lg btn-block" href="https://booklikeaboss.com" rel="noopener">Book your review call</a>
+      </div>
+
+    </div>
+  </div>
 </section>
 <?php
 echo '<script>window.KISS = ' . json_encode([
