@@ -4,3 +4,4 @@ data/
 tools/decal/*.psd
 tools/decal/*.psb
 __pycache__/
+secrets.env

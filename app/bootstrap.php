@@ -4,13 +4,13 @@ declare(strict_types=1);
 const APP_ROOT = __DIR__ . '/..';
 
 /**
- * Loads KEY=VALUE pairs from secrets.env, which lives in the app folder above
- * public_html (outside the web root and outside git). Values already set in the
- * environment win. Missing file is fine (local development).
+ * Loads KEY=VALUE pairs from secrets.env in public_html/ (one level above the web
+ * root public_html/public/, so it is not reachable by URL, and listed in .gitignore).
+ * Values already set in the environment win. Missing file is fine (local development).
  */
 function load_secrets(): void
 {
-    $file = dirname(__DIR__, 2) . '/secrets.env';
+    $file = dirname(__DIR__) . '/secrets.env';
     if (!is_readable($file)) {
         return;
     }
