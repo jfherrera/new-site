@@ -49,6 +49,12 @@ foreach ($jobs as $job) {
         $error = 'unknown_action';
     }
 
+    if (!$ok) {
+        // Plain-text log in data/ (not web-accessible) so failures can be read over SFTP.
+        $line = gmdate('c') . " job={$job['id']} action={$job['action']} error={$error} last_call=" . ($GLOBALS['systeme_last'] ?? 'none') . PHP_EOL;
+        file_put_contents(APP_ROOT . '/data/sync.log', $line, FILE_APPEND | LOCK_EX);
+    }
+
     $attempts = (int) $job['attempts'] + 1;
     $status = $ok ? 'done' : ($attempts >= MAX_ATTEMPTS || $error === 'unknown_action' ? 'failed' : 'pending');
     db()->prepare('UPDATE sync_jobs SET status = ?, attempts = ?, last_error = ?, done_at = ? WHERE id = ?')

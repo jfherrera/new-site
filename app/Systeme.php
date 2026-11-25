@@ -22,10 +22,14 @@ function systeme_call(string $method, string $path, ?array $body = null): array
         usleep((int) ($wait * 1000000));
     }
     $last = microtime(true);
-    return http_json($method, 'https://api.systeme.io/api/' . ltrim($path, '/'), [
+    $res = http_json($method, 'https://api.systeme.io/api/' . ltrim($path, '/'), [
         'X-API-Key: ' . $key,
         'Accept: application/json',
     ], $body);
+    // Keep a short, secret-free record of the last call for the sync log.
+    $GLOBALS['systeme_last'] = $method . ' ' . $path . ' -> ' . ($res['_status'] ?? 0)
+        . ' ' . mb_substr((string) json_encode($res, JSON_UNESCAPED_SLASHES), 0, 300);
+    return $res;
 }
 
 function systeme_tag_id(string $name): ?int
