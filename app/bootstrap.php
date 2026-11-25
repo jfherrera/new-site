@@ -20,8 +20,9 @@ function load_secrets(): void
             continue;
         }
         [$key, $value] = array_map('trim', explode('=', $line, 2));
+        // putenv() is disabled on Cloudways, so keep secrets in memory instead.
         if ($key !== '' && getenv($key) === false) {
-            putenv($key . '=' . $value);
+            secrets_store($key, $value);
         }
     }
 }
@@ -54,10 +55,22 @@ function canonical_host_redirect(): void
 }
 canonical_host_redirect();
 
+function secrets_store(?string $key = null, ?string $value = null): array
+{
+    static $values = [];
+    if ($key !== null) {
+        $values[$key] = $value;
+    }
+    return $values;
+}
+
 function env(string $key, ?string $default = null): ?string
 {
     $v = getenv($key);
-    return ($v === false || $v === '') ? $default : $v;
+    if ($v === false || $v === '') {
+        $v = secrets_store()[$key] ?? null;
+    }
+    return ($v === null || $v === '') ? $default : $v;
 }
 
 function h(?string $s): string
