@@ -22,7 +22,7 @@ Old URLs `/biz-infomx-1` and `/mx-thank-you` return 301 to `/biz-lookup/`.
 
 1. Create a PHP app. Set the document root to `public/`.
 2. Enable the `curl` and `pdo_sqlite` PHP extensions (usually on by default).
-3. Set the environment variables listed in `.env.example` in Application settings. Don't put real keys in git.
+3. Create `secrets.env` in the app folder above `public_html` (for example `/home/master/applications/<app>/secrets.env`), using `.env.example` as the template. Cloudways has no environment-variable screen for plain PHP apps, so this file is how the keys are loaded. It's outside the web root and outside git.
 4. Set `DB_PATH` to a folder outside `public/`. The app creates the folder.
 5. Add a cron job, every minute: `php /home/master/applications/<app>/public_html/tools/sync_systeme.php`
    (adjust to the app's path).
