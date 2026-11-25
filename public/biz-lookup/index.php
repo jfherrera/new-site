@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../app/views.php';
 
 page_head('Find Your Business | KISS Reviews', 'Find your business on Google to get your free review decal.');
 ?>
-<section class="lookup">
+<section class="container narrow lookup">
   <h1>Find your business</h1>
   <p class="lede">Start typing your business name and pick it from the list.</p>
 

@@ -14,11 +14,19 @@ function page_head(string $title, string $description): void
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{$title}</title>
 <meta name="description" content="{$desc}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
-<header class="site-header"><a class="brand" href="/">KISS <span>Reviews</span></a></header>
-<main class="wrap">
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a class="logo" href="/" aria-label="KISS Reviews home">KISS<small>REVIEWS</small></a>
+    <span class="tagline">Keep It Super Simple</span>
+  </div>
+</header>
+<main>
 HTML;
 }
 
@@ -28,7 +36,10 @@ function page_foot(): void
     echo <<<HTML
 </main>
 <footer class="site-footer">
-  <p>&copy; {$year} KISS Reviews</p>
+  <div class="container">
+    <p class="logo-foot">KISS Reviews</p>
+    <p>&copy; {$year} KISS Reviews. All rights reserved.</p>
+  </div>
 </footer>
 <script src="/assets/app.js" defer></script>
 </body>

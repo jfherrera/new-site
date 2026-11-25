@@ -14,12 +14,12 @@ $paid = $order['pack_status'] === 'paid';
 
 page_head('Thank You | KISS Reviews', 'Your free decal is on its way.');
 ?>
-<section class="thanks">
+<section class="container narrow thanks">
   <h1>Thank you, <?= $name ?>!</h1>
   <p class="lede">Your free decal is on its way. Please allow 1 to 2 weeks for delivery.</p>
 </section>
 
-<section class="upsell card">
+<section class="container narrow card upsell">
   <h2>Add 5 more decals</h2>
   <p>Put a decal at every counter, door, and register. Five more decals for <strong>$10</strong> plus shipping and handling.</p>
   <?php if ($paid): ?>
@@ -31,7 +31,7 @@ page_head('Thank You | KISS Reviews', 'Your free decal is on its way.');
   <?php endif; ?>
 </section>
 
-<section class="analysis card">
+<section class="container narrow card analysis">
   <h2>Get a free marketing analysis</h2>
   <p>We'll perform a free marketing analysis of your business and have it ready to review with you. Book a time that works for you.</p>
   <a class="btn btn-secondary" href="https://booklikeaboss.com" rel="noopener">Book your review call</a>
