@@ -139,6 +139,7 @@
                 if (decline) { decline.hidden = true; }
                 revealAnalysis();
               } else {
+                console.error('paypal-capture response:', JSON.stringify(res.data));
                 throw new Error(res.data.error || 'capture_failed');
               }
             });
