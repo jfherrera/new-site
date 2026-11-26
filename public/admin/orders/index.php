@@ -42,6 +42,18 @@ HTML;
     exit;
 }
 
+// Server check for setup: shows PHP version and required extensions.
+if (isset($_GET['check'])) {
+    header('Content-Type: text/plain; charset=utf-8');
+    echo 'PHP ' . PHP_VERSION . PHP_EOL;
+    foreach (['gd', 'curl', 'pdo_sqlite', 'mbstring', 'zip'] as $ext) {
+        echo $ext . ': ' . (extension_loaded($ext) ? 'yes' : 'NO') . PHP_EOL;
+    }
+    echo 'imagecreatefrompng: ' . (function_exists('imagecreatefrompng') ? 'yes' : 'NO') . PHP_EOL;
+    echo 'data folder writable: ' . (is_writable(data_dir()) ? 'yes' : 'NO') . PHP_EOL;
+    exit;
+}
+
 $rows = db()->query('SELECT * FROM orders ORDER BY created_at DESC')->fetchAll();
 
 if (($_GET['format'] ?? '') === 'csv') {
@@ -102,6 +114,7 @@ th{background:#f6f7fa;position:sticky;top:0}
   <h1>Orders</h1>
   <span class="summary">{$count} leads, {$paidCount} upsell buyers</span>
   <a class="btn dl" href="/admin/orders/?format=csv">Download CSV</a>
+  <a class="btn out" href="/admin/orders/?check=1">Server check</a>
   <a class="btn out" href="/admin/orders/?logout=1">Sign out</a>
 </header>
 <table>
