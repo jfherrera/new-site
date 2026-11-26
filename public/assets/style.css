@@ -195,3 +195,13 @@ input[readonly] { background: var(--soft); }
 .link-btn:hover { color: var(--ink); }
 .thanks-grid { grid-template-columns: 1fr; max-width: 760px; margin: 0 auto; }
 #analysis-slot { margin-top: 0; }
+
+/* legal pages */
+.legal { padding: 40px 0 64px; }
+.legal h1 { font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+.legal h2 { font-size: 1.15rem; font-weight: 800; margin: 26px 0 8px; }
+.legal ul { padding-left: 20px; }
+.legal li { margin: 6px 0; }
+.legal a { color: var(--blue); }
+.draft-note { background: #fff8e1; border: 1px solid #f0d27a; padding: 10px 14px; border-radius: 8px; font-size: .9rem; }
+.site-footer a { color: #fff; }

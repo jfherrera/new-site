@@ -38,6 +38,7 @@ function page_foot(): void
 <footer class="site-footer">
   <div class="container">
     <p class="logo-foot">KISS Reviews</p>
+    <p><a href="/privacy/">Privacy Policy</a> &middot; <a href="/terms/">Terms of Use</a></p>
     <p>&copy; {$year} KISS Reviews. All rights reserved.</p>
   </div>
 </footer>
