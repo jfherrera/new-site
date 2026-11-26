@@ -74,6 +74,7 @@ def stars(base, cx, cy, span, color=(249, 211, 26, 255)):
         d.polygon(pts, fill=color)
 
 def qr_card(base, review_url):
+    # review_url=None draws only the empty white card (used for the PHP template).
     # white rounded card, centred right of the phone illustration (source coords 338..668, 690..1020)
     x1 = W - CARD_RIGHT_MARGIN
     x0 = x1 - CARD_SIZE
@@ -81,6 +82,8 @@ def qr_card(base, review_url):
     card = Image.new('RGBA', base.size, (0, 0, 0, 0))
     ImageDraw.Draw(card).rounded_rectangle([x0, y0, x1, y1], radius=40, fill=(255, 255, 255, 255))
     base.alpha_composite(card)
+    if review_url is None:
+        return
     qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_H, border=4)
     qr.add_data(review_url); qr.make(fit=True)
     m = qr.get_matrix(); n = len(m)
@@ -109,7 +112,7 @@ def main(review_url, out):
     paste_centered(base, rich_text(d, [('SCAN', 600), (' QR CODE', 400)], 0, 0, 56, (1, 1, 1, 255), rotate=12), ILLU_X + int(0.5 * 254 * SX * ILLU_SCALE), ty(745))
     pw = 40
     paste_centered(base, rich_text(d, [('powered by ', 400), ('kissreviews.com', 600)], tx(398), ty(1159), pw, (1, 1, 1, 255)), tx(398), ty(1159))
-    qr_card(base, review_url)
+    qr_card(base, None if review_url == '' else review_url)
     rgb = Image.new('RGB', base.size, (255, 255, 255)); rgb.paste(base, mask=base.split()[3])
     rgb.save(out + '.png', dpi=(DPI, DPI))
     rgb.save(out + '.pdf', resolution=DPI)

@@ -1,0 +1,11 @@
+{
+    "name": "develous/kiss-reviews-funnel",
+    "description": "KISS Reviews funnel",
+    "require": {
+        "php": ">=8.1",
+        "chillerlan/php-qrcode": "^5"
+    },
+    "config": {
+        "platform": {"php": "8.1.34"}
+    }
+}

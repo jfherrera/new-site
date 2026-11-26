@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/../../../app/Store.php';
+require_once __DIR__ . '/../../../app/Decal.php';
 
 header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
@@ -39,6 +40,29 @@ if (!$authed) {
 <form method="post"><input type="hidden" name="action" value="login"><label>Password<br><input type="password" name="password" autofocus required></label><br><button type="submit">Sign in</button></form>
 </body></html>
 HTML;
+    exit;
+}
+
+// Per-order decal download: the print-ready PNG with this business's QR code.
+if (isset($_GET['decal'])) {
+    $order = order_get(clean_str($_GET['decal'], 64));
+    if ($order === null) {
+        http_response_code(404);
+        echo 'Order not found.';
+        exit;
+    }
+    $slug = trim((string) preg_replace('/[^a-z0-9]+/i', '-', strtolower($order['business_name'])), '-') ?: 'business';
+    try {
+        $png = decal_png(review_url($order['place_id']));
+    } catch (Throwable $e) {
+        http_response_code(500);
+        echo 'Could not build the decal. Check the server check page for GD.';
+        exit;
+    }
+    header('Content-Type: image/png');
+    header('Content-Disposition: attachment; filename="decal-' . $slug . '-' . $order['id'] . '.png"');
+    header('Content-Length: ' . strlen($png));
+    echo $png;
     exit;
 }
 
@@ -85,7 +109,7 @@ foreach ($rows as $r) {
         : '<span class="muted">Not purchased</span>';
     $body .= '<tr>'
         . '<td>' . h(substr((string) $r['created_at'], 0, 16)) . '</td>'
-        . '<td><strong>' . h($r['business_name']) . '</strong><br><span class="muted">' . h($r['website']) . '</span></td>'
+        . '<td><strong>' . h($r['business_name']) . '</strong><br><span class="muted">' . h($r['website']) . '</span><br><a href="/admin/orders/?decal=' . h($r['id']) . '">Download decal</a></td>'
         . '<td>' . h($r['formatted_address']) . '</td>'
         . '<td>' . h($r['recipient_name']) . '</td>'
         . '<td>' . h($r['email']) . '<br>' . h($r['phone']) . '</td>'
